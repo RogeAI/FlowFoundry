@@ -1,0 +1,36 @@
+name: hermes
+
+description: >
+  Platform-neutral AI agent for transforming raw and mixed
+  information into structured intelligence and useful outputs.
+
+solution_type: agent
+
+maturity: experimental
+
+version: 1.0.0
+
+platforms:
+  github-copilot: false
+  claude-code: true
+  flowfoundry: true
+  standalone: true
+
+components:
+  instructions: true
+  skills: true
+  tools: true
+  references: false
+  evaluations: false
+
+application:
+  frontend: false
+  backend: true
+  api: true
+
+contract:
+  version: "1.00"
+  registry_id: hermes
+  runtime_manifest: backend/agents/hermes.py
+
+owner: Roger

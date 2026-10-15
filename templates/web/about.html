@@ -1,0 +1,69 @@
+{% extends "web/base.html" %}
+{% load static %}
+
+{% block body %}
+<header class="global-header">
+  <a class="brand-art" href="{% url 'web:about' %}" aria-label="About FlowFoundry">
+    <img class="brand-lockup" src="{% static 'flowfoundry/images/flowfoundry-logo-modern-v1.png' %}" alt="FlowFoundry">
+  </a>
+  <nav class="global-nav" aria-label="Global navigation">
+    <a href="{% url 'web:workspace' %}">Workspace</a><button type="button">Activity</button><button type="button">Agents</button><button type="button">Governance</button><a class="current" href="{% url 'web:about' %}" aria-current="page">About</a>
+  </nav>
+  <div class="header-tools"><a class="about-workspace-link" href="{% url 'web:workspace' %}">Open workspace <span aria-hidden="true">→</span></a></div>
+</header>
+
+<main class="about-page">
+  <section class="about-hero">
+    <div class="about-hero-copy">
+      <span class="about-kicker">About FlowFoundry</span>
+      <h1>From an idea to coordinated action</h1>
+      <p class="about-lead">Tell FlowFoundry what you want to achieve. It brings together the right specialist Agents, prepares a clear workflow, and helps you follow the work through to a useful result.</p>
+      <p class="about-support">You focus on the outcome. FlowFoundry handles the coordination while keeping you informed and in control.</p>
+      <div class="about-actions">
+        <a class="about-primary-action" href="{% url 'web:workspace' %}">Start a new workflow <span aria-hidden="true">→</span></a>
+        <a class="about-text-action" href="#how-it-works">See how it works</a>
+      </div>
+    </div>
+    <div class="about-hero-visual" aria-label="A request is coordinated by ForgeMaster and specialist Agents">
+      <div class="about-user-request"><span>Your outcome</span><strong>Review my requirements and prepare a test-ready plan</strong></div>
+      <div class="about-flow-line" aria-hidden="true"></div>
+      <div class="about-forgemaster-card">
+        <img src="{% static 'flowfoundry/images/preview-forgemaster/robot-assistant-presenting-intelligence.png' %}" alt="ForgeMaster coordinating the workflow">
+        <div><span>Always supervising</span><strong>ForgeMaster</strong><p>Understands, coordinates, and adapts the flow.</p></div>
+      </div>
+      <div class="about-agent-row" aria-label="Specialist Agents working together">
+        <div><img src="{% static 'flowfoundry/images/Athena.png' %}" alt="Athena"><span>Athena</span></div>
+        <div><img src="{% static 'flowfoundry/images/Themis.png' %}" alt="Themis"><span>Themis</span></div>
+        <div><img src="{% static 'flowfoundry/images/Hermes.png' %}" alt="Hermes"><span>Hermes</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="about-section" id="how-it-works">
+    <div class="about-section-heading"><span>How it works</span><h2>A clear path from request to result</h2><p>FlowFoundry makes sophisticated coordination feel straightforward. You can begin without learning the system behind it.</p></div>
+    <div class="about-steps">
+      {% for number, title, text in steps %}<article><span>{{ number }}</span><h3>{{ title }}</h3><p>{{ text }}</p></article>{% endfor %}
+    </div>
+  </section>
+
+  <section class="about-control-section">
+    <div class="about-control-visual">
+      <div class="about-control-top"><span>Workflow overview</span><b>In progress</b></div>
+      <div class="about-progress"><i></i><i></i><i></i><i></i></div>
+      <div class="about-control-row complete"><span>✓</span><div><strong>Request understood</strong><small>ForgeMaster prepared the workflow</small></div><b>Complete</b></div>
+      <div class="about-control-row active"><span>2</span><div><strong>Specialist work</strong><small>Focused Agents are contributing</small></div><b>Working</b></div>
+      <div class="about-control-row"><span>3</span><div><strong>Review the result</strong><small>Outputs remain tied to your objective</small></div><b>Next</b></div>
+    </div>
+    <div class="about-control-copy"><span class="about-kicker">Built around your oversight</span><h2>You stay in control</h2><p>FlowFoundry is not a black box that simply disappears with your request. The workspace is designed to show who is involved, what is happening, and when your decision is needed.</p><ul><li>Use <strong>Wait for GO</strong> to hold execution until you release it.</li><li>See ForgeMaster's plan and the participating specialists.</li><li>Respond when an Agent needs clarification or a decision.</li><li>Keep progress and outputs connected to one objective.</li></ul></div>
+  </section>
+
+  <section class="about-section about-capability-section">
+    <div class="about-section-heading"><span>What you can do</span><h2>One workspace for coordinated AI work</h2></div>
+    <div class="about-capability-grid">
+      {% for icon, title, text in capabilities %}<article><span aria-hidden="true">{{ icon }}</span><div><h3>{{ title }}</h3><p>{{ text }}</p></div></article>{% endfor %}
+    </div>
+  </section>
+
+  <section class="about-cta"><div><span>Ready when you are</span><h2>Start with the outcome you have in mind.</h2><p>FlowFoundry will help turn it into a coordinated, visible workflow.</p></div><a href="{% url 'web:workspace' %}">Start a new workflow <span aria-hidden="true">→</span></a></section>
+</main>
+{% endblock %}

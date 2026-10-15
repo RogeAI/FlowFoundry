@@ -1,0 +1,69 @@
+{% extends "web/base.html" %}
+{% load static %}
+{% get_static_prefix as STATIC_PREFIX %}
+
+{% block body %}
+<main class="enterprise-shell" data-prepare-url="{% url 'web:prepare_workflow' %}" data-session-url="{% url 'web:session' %}">
+  <header class="global-header">
+    <a class="brand-art" href="{% url 'web:about' %}"><img class="brand-lockup" src="{% static 'flowfoundry/images/flowfoundry-logo-modern-v1.png' %}" alt="FlowFoundry"></a>
+    <nav class="global-nav" aria-label="Global navigation"><a class="current" href="{% url 'web:workspace' %}">Workspace</a><button type="button">Activity</button><button type="button">Agents</button><button type="button">Governance</button><a href="{% url 'web:about' %}">About</a></nav>
+    <div class="header-tools"><button class="header-icon" type="button" aria-label="Search">⌕</button><button class="header-icon" type="button" aria-label="Help">?</button><button class="user-menu" type="button" aria-label="Open user menu"><span>RN</span><div><strong>Roger</strong><small>Workspace owner</small></div><b>⌄</b></button></div>
+  </header>
+  <div class="application-body">
+    <aside class="side-panel" aria-label="Workspace navigation">
+      <button class="primary-create" type="button"><span>＋</span> New workflow</button><button class="reset-control" id="reset-session" type="button"><span>↻</span> Reset session</button>
+      <div class="side-group"><span class="side-label">Workspace</span><button class="side-link active" type="button"><span>▦</span> Start</button><button class="side-link" type="button"><span>↺</span> History <b>12</b></button><button class="side-link" type="button"><span>◇</span> Saved</button></div>
+      <div class="side-group"><span class="side-label">Recent sessions</span><button class="recent-link" type="button"><i class="recent-dot running"></i><span>Checkout requirements<small>3 Agents · Running</small></span></button><button class="recent-link" type="button"><i class="recent-dot"></i><span>SAP test scenarios<small>Yesterday</small></span></button><button class="recent-link" type="button"><i class="recent-dot"></i><span>Automation review<small>12 Aug</small></span></button></div>
+    </aside>
+    <section class="main-workspace">
+      <div class="page-heading"><div><span class="breadcrumb">Workspace / New workflow</span><h1>Start a new workflow</h1><p>Tell ForgeMaster what you need. It will assemble the right specialists, set the execution order, and supervise the work throughout.</p></div><div class="system-state local-simulation"><i></i> Django local simulation</div></div>
+      <div class="local-simulation-notice" role="status"><strong>Django local simulation</strong><span>The interface and workflow preparation now run through Python and Django. No real Agent or external API is invoked.</span></div>
+      <div class="workflow-guide" aria-label="How to begin"><div><span>1</span><p><strong>Describe the outcome</strong><small>Explain the result you need.</small></p></div><div><span>2</span><p><strong>Select useful actions</strong><small>Choose as many as needed.</small></p></div><div><span>3</span><p><strong>Add supporting context</strong><small>Attach relevant source material.</small></p></div><div><span>4</span><p><strong>Let ForgeMaster lead</strong><small>Agents and order are coordinated for you.</small></p></div></div>
+      <div class="forgemaster-response" id="forgemaster-response" role="status" hidden></div>
+      <section class="orchestration-panel" id="orchestration-panel" aria-label="Start a request">
+        <div class="panel-header"><div class="forgemaster-identity"><img class="forgemaster-mark" src="{% static 'flowfoundry/images/preview-forgemaster/robot-assistant-reviewing-compact.png' %}" alt="ForgeMaster"><div><strong>ForgeMaster</strong><span>Orchestration and continuous supervision</span></div></div><span class="listening-state"><i></i> Listening</span></div>
+        <div class="request-builder">
+          <div class="composer">
+            <div class="composer-title"><label for="workflow-prompt">What would you like to achieve?</label><button id="expand-composer" type="button" aria-label="Expand writing area">Expand <span>↗</span></button></div>
+            <textarea id="workflow-prompt" placeholder="Describe the outcome, problem, or question in your own words..."></textarea>
+            <div class="selected-action-chips" id="selected-action-chips" aria-label="Selected actions" hidden></div>
+            <div class="preferred-agent" id="preferred-agent" hidden><span></span><button type="button" aria-label="Remove preferred Agent">×</button></div>
+            <div class="composer-footer">
+              <div class="composer-actions">
+                <input id="context-files" class="visually-hidden-file-input" type="file" multiple tabindex="-1" aria-hidden="true">
+                <button class="secondary-control" id="attach-context" type="button"><span>＋</span> Attach context</button>
+                <button class="secondary-control" id="wfg-control" type="button" aria-pressed="false"><span>◷</span> WFG</button><span class="wfg-indicator" id="wfg-indicator" hidden><i></i> WFG active · waiting for GO</span>
+              </div>
+              <div class="attached-file-list" id="attached-file-list" aria-live="polite" aria-label="Attached context files"></div>
+              <button class="begin-control" id="begin-workflow" type="button">Begin workflow<span>→</span></button>
+            </div>
+          </div>
+          <aside class="action-selector" aria-labelledby="actions-title">
+            <div class="action-heading"><div><h2 id="actions-title">Select actions</h2><p><strong>{{ actions|length }} actions available</strong> · choose one or more</p></div><span id="selected-count">0 selected</span></div>
+            <div class="shortcut-grid">{% for action in actions %}<button type="button" data-action="{{ action }}" aria-pressed="false"><i>+</i><span>{{ action }}</span></button>{% endfor %}</div>
+            <p class="order-note">ForgeMaster determines dependencies and execution order—not the order you select these actions.</p>
+          </aside>
+        </div>
+      </section>
+      <section class="agent-directory" aria-labelledby="agents-title">
+        <div class="enterprise-section-heading directory-heading"><div class="section-title-row"><h2 id="agents-title">Specialist Agents</h2><span>{{ agents|length }} specialists</span><p>Choose a preferred starting Agent, or let ForgeMaster decide.</p></div><div class="availability-legend"><span><i class="available"></i>Available</span><span><i class="busy"></i>Busy</span><span><i class="unavailable"></i>Unavailable</span></div></div>
+        <div class="agent-grid">{% for agent in agents %}<article class="agent-card {{ agent.status|lower }}" data-agent-id="{{ agent.id }}" data-agent-name="{{ agent.name }}"><div class="agent-card-head">{% if agent.portrait %}<img class="agent-avatar" src="{{ STATIC_PREFIX }}flowfoundry/images/{{ agent.portrait }}" alt="{{ agent.name }}">{% else %}<span class="agent-avatar agent-avatar-placeholder" role="img" aria-label="{{ agent.name }} portrait">?</span>{% endif %}<div class="agent-identity"><h3>{{ agent.name }}</h3><span class="agent-role">{{ agent.role }}</span></div><span class="agent-status"><i></i>{{ agent.status }}</span></div><p>{{ agent.description }}</p><button type="button" data-select-agent {% if agent.status != 'Available' %}disabled{% endif %}>{% if agent.status == 'Available' %}Select Agent <span>→</span>{% else %}Currently unavailable{% endif %}</button></article>{% endfor %}</div>
+      </section>
+      <footer class="workspace-footer">ForgeMaster observes continuously and intervenes selectively throughout every workflow.</footer>
+    </section>
+  </div>
+
+  <div class="fm-modal-overlay" id="fm-modal" role="dialog" aria-modal="true" aria-label="ForgeMaster response" hidden>
+    <div class="fm-modal">
+      <div class="fm-modal-left"><img class="fm-state-image" id="fm-state-image" src="{% static 'flowfoundry/images/preview-forgemaster/robot-assistant-working.png' %}" alt="ForgeMaster is working"></div>
+      <div class="fm-modal-right">
+        <p class="fm-modal-title" id="fm-modal-title">ForgeMaster is working on your task!</p>
+        <div id="fm-processing"><div class="fm-spinner"><div class="fm-spinner-ring"></div></div><p class="fm-spinner-message" id="fm-spinner-message">Identifying the right specialists...</p></div>
+        <div id="fm-result" hidden></div>
+      </div>
+    </div>
+  </div>
+  <form hidden>{% csrf_token %}</form>
+</main>
+<script src="{% static 'flowfoundry/js/workspace.js' %}?v=django-3" defer></script>
+{% endblock %}

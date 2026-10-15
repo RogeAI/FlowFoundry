@@ -1,0 +1,30 @@
+name: sap-test-design-coach
+
+description: >
+  AI agent for coaching, incrementally building, and quality-gating
+  reusable SAP, iTero, and Invisalign test cases.
+
+solution_type: agent
+
+maturity: experimental
+
+version: 0.1.0
+
+platforms:
+  github-copilot: true
+  claude-code: false
+  standalone: false
+
+components:
+  instructions: false
+  skills: true
+  tools: false
+  references: true
+  evaluations: false
+
+application:
+  frontend: false
+  backend: false
+  api: false
+
+owner: Roger

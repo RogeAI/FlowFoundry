@@ -1,0 +1,66 @@
+{% extends "web/base.html" %}
+{% load static %}
+
+{% block body %}
+<main class="enterprise-shell" id="session-root"
+  data-workspace-url="{% url 'web:workspace' %}"
+  data-response-url="{% url 'web:respond_to_session' %}"
+  data-guiding-image="{% static 'flowfoundry/images/preview-forgemaster/robot-assistant-guiding-compact.png' %}"
+  data-investigating-image="{% static 'flowfoundry/images/preview-forgemaster/robot-assistant-inspecting.png' %}"
+  data-complete-image="{% static 'flowfoundry/images/preview-forgemaster/robot-assistant-approved-compact.png' %}">
+  <header class="global-header">
+    <a class="brand-art" href="{% url 'web:about' %}" aria-label="About FlowFoundry"><img class="brand-lockup" src="{% static 'flowfoundry/images/flowfoundry-logo-modern-v1.png' %}" alt="FlowFoundry"></a>
+    <nav class="global-nav" aria-label="Global navigation"><a class="current" href="{% url 'web:workspace' %}">Workspace</a><button type="button">Activity</button><button type="button">Agents</button><button type="button">Governance</button><a href="{% url 'web:about' %}">About</a></nav>
+    <div class="header-tools"><button class="header-icon" type="button" aria-label="Search">⌕</button><button class="header-icon" type="button" aria-label="Help">?</button><button class="user-menu" type="button" aria-label="Open user menu"><span>RN</span><div><strong>Roger</strong><small>Workspace owner</small></div><b>⌄</b></button></div>
+  </header>
+
+  <div class="application-body">
+    <aside class="side-panel" aria-label="Workspace navigation">
+      <a class="primary-create session-nav-link" href="{% url 'web:workspace' %}"><span>＋</span> New workflow</a>
+      <div class="side-group"><span class="side-label">Workspace</span><a class="side-link session-nav-link" href="{% url 'web:workspace' %}"><span>▦</span> Start</a><button class="side-link" type="button"><span>↺</span> History <b>12</b></button><button class="side-link" type="button"><span>◇</span> Saved</button></div>
+      <div class="side-group"><span class="side-label">Current session</span><button class="side-link active" type="button"><span>⚡</span> Active workflow</button></div>
+      <div class="side-group"><span class="side-label session-spacer-label">&nbsp;</span><button class="side-link" type="button"><span>📝</span> My Saved Prompts</button><button class="side-link" type="button"><span>📁</span> My Saved Projects</button></div>
+    </aside>
+
+    <section class="main-workspace session-layout">
+      <div class="session-left">
+        <div class="page-heading"><div><span class="breadcrumb">Workspace / Active workflow</span><h1>Workflow in progress</h1><p>ForgeMaster is supervising the execution of your request.</p></div></div>
+
+        <div class="local-simulation-notice session-simulation-notice" role="status"><strong>Django local simulation</strong><span>{{ session_data.classification }}</span></div>
+
+        <div class="session-forgemaster-bar">
+          <div class="session-fm-identity"><img class="session-fm-state-image" id="session-fm-image" src="{% static 'flowfoundry/images/preview-forgemaster/robot-assistant-guiding-compact.png' %}" alt="ForgeMaster is supervising"><div><strong>ForgeMaster</strong><span id="session-fm-copy">Supervising your workflow</span></div></div>
+          <div class="session-progress-area"><span class="session-status-badge running" id="session-status"><i></i><span>Running</span></span><div class="session-progress"><div class="session-progress-bar"><div class="session-progress-fill" id="session-progress-fill"></div></div><span id="session-progress-copy">0/{{ session_data.steps|length }} Agents complete</span></div></div>
+        </div>
+
+        <div class="session-plan-panel">
+          <h2>Workflow Plan</h2>
+          <div class="session-steps-container"><div class="session-steps" id="session-steps">
+            {% for step in session_data.steps %}
+            <article class="session-step waiting" data-step-id="{{ step.id }}" data-output="{{ step.output }}">
+              <div class="session-step-header"><img class="agent-avatar" src="{% static 'flowfoundry/images/' %}{{ step.portrait }}" alt="{{ step.name }}"><div class="session-step-info"><strong>{{ step.name }}</strong><span>{{ step.role }}</span></div><span class="session-step-status waiting">Waiting</span></div>
+              <div class="session-step-output" hidden><p></p><button class="session-download-files" type="button" aria-label="Download {{ step.name }} files"><img src="{% static 'flowfoundry/images/Download-files.png' %}" alt=""><span>Download Files</span></button></div>
+            </article>
+            {% endfor %}
+          </div><div class="session-scroll-arrows"><button type="button" data-scroll="up" aria-label="Scroll workflow plan up">▲</button><button type="button" data-scroll="down" aria-label="Scroll workflow plan down">▼</button></div></div>
+          <div class="session-master-doc" id="session-master-doc" hidden><strong>Master Document</strong><button class="session-download-files" type="button" aria-label="Download master file"><img src="{% static 'flowfoundry/images/Download Master.png' %}" alt=""><span>Download master file</span></button></div>
+        </div>
+
+        <section class="session-files-panel" aria-labelledby="workflow-files-title"><div class="session-files-header"><div><h2 id="workflow-files-title">Workflow Files</h2><p>Files available to this workflow</p></div><span id="session-file-count">0 files</span></div><div class="session-files-list" id="session-files-list" hidden></div><p class="session-files-empty" id="session-files-empty">No files attached to this workflow yet.</p></section>
+
+        <div class="session-actions" id="session-actions"><button class="session-btn pause" id="session-pause" type="button">⏸ Pause workflow</button><button class="session-btn cancel" id="session-cancel" type="button">✕ Cancel workflow</button></div>
+
+        <div class="session-feed-panel"><div class="session-feed-header"><h2>ForgeMaster Live Feed</h2><button class="session-expand-btn" id="session-feed-expand" type="button">Expand ↗</button></div><div class="session-feed" id="session-feed" aria-live="polite"><div class="session-feed-item"><i class="session-feed-dot"></i><p>ForgeMaster is preparing the workflow...</p></div><div class="session-feed-item typing" id="session-feed-typing"><i class="session-feed-dot"></i><p class="typing-indicator">...</p></div></div></div>
+      </div>
+
+      <aside class="session-right">
+        <div class="session-agent-select disabled"><h3>Select an Agent <span class="coming-soon">Coming soon</span></h3><div class="session-agent-portraits">{% for agent in agents %}<span class="session-agent-tooltip" data-agent-name="{{ agent.name }}">{% if agent.portrait %}<img class="agent-avatar disabled-avatar" src="{% static 'flowfoundry/images/' %}{{ agent.portrait }}" alt="{{ agent.name }}">{% else %}<span class="agent-avatar agent-avatar-placeholder disabled-avatar" role="img" aria-label="{{ agent.name }}">?</span>{% endif %}</span>{% endfor %}</div></div>
+        <div class="session-chat-panel" id="session-chat-panel"><h3>ForgeMaster <span class="session-attention-label" id="session-attention-label" hidden>Input required · Hermes</span></h3><div class="session-chat-area" id="session-chat-area"><p class="session-chat-disabled" id="session-chat-placeholder">Chat becomes available when ForgeMaster needs input or the workflow completes.</p></div><div class="session-chat-input disabled" id="session-chat-input"><textarea id="session-chat-message" rows="3" placeholder="Ask ForgeMaster..." disabled></textarea><div class="session-chat-controls"><input class="visually-hidden-file-input" id="session-file-input" type="file" multiple tabindex="-1" aria-hidden="true"><button class="session-chat-attach" id="session-attach" type="button">＋ Attach context</button><button class="session-chat-wfg" id="session-chat-wfg" type="button" disabled>◷ WFG</button><button class="session-chat-send" id="session-chat-send" type="button" disabled>SEND</button></div></div></div>
+      </aside>
+    </section>
+  </div>
+  {{ session_data|json_script:"session-data" }}
+  <form hidden>{% csrf_token %}</form>
+</main>
+<script src="{% static 'flowfoundry/js/session.js' %}?v=django-2" defer></script>
+{% endblock %}
